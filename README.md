@@ -1,91 +1,29 @@
-# Ratchet
+[update-readmes]   Mode: rewrite — migrating to template structure...
+# ratchet
 
-![ratchet logo](docs/ratchet.png)
+[![Built with Ona](https://ona.com/build-with-ona.svg)](https://app.ona.com/#https://github.com/Interested-Deving-1896/ratchet)
 
-Ratchet is a tool for improving the security of CI/CD workflows by automating
-the process of pinning and unpinning upstream versions. It's like Bundler,
-Cargo, Go modules, NPM, Pip, or Yarn, but for CI/CD workflows. Ratchet supports:
+<!-- AI:start:what-it-does -->
+_Description pending._
+<!-- AI:end:what-it-does -->
 
--   Circle CI
--   GitHub Actions
--   GitLab CI
--   Google Cloud Build
--   Harness Drone
--   Tekton
+## Architecture
 
-**⚠️ Warning!** The README corresponds to the `main` branch of ratchet's
-development, and it may contain unreleased features.
+<!-- AI:start:architecture -->
+_Architecture documentation pending._
+<!-- AI:end:architecture -->
 
+## Install
 
-## Problem statement
+<!-- Add installation instructions here. This section is yours — the AI will not modify it. -->
 
-Most CI/CD systems are one layer of indirection away from `curl | sudo bash`.
-Unless you are specifically pinning CI workflows, containers, and base images to
-checksummed versions, _everything_ is mutable: GitHub labels are mutable and
-Docker tags are mutable. This poses a substantial security and reliability risk.
-
-What you're probably doing:
-
-```yaml
-uses: 'actions/checkout@v4'
-# or
-image: 'ubuntu:20.04'
+```bash
+git clone https://github.com/Interested-Deving-1896/ratchet.git
+cd ratchet
 ```
-
-What you should really be doing:
-
-```yaml
-uses: 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683'
-# or
-image: 'ubuntu@sha256:47f14534bda344d9fe6ffd6effb95eefe579f4be0d508b7445cf77f61a0e5724'
-```
-
-But resolving those checksums and managing the update lifecycle is extremely
-toilsome. That's what ratchet aims to solve! Ratchet resolves and updates
-unpinned references to the latest version that matches their constraint, and
-then keeps a record of the original constraint.
-
-```yaml
-uses: 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683' # ratchet:actions/checkout@v4
-# or
-image: 'ubuntu@sha256:47f14534bda344d9fe6ffd6effb95eefe579f4be0d508b7445cf77f61a0e5724' # ratchet:ubuntu:20.04
-```
-
-
-## Installation
-
-There are a few options for installing ratchet:
-
--   Via homebrew:
-
-    ```sh
-    brew install ratchet
-    ```
-
-    Note this option is community supported and may not be the latest
-    available version.
-
--   As a single-static binary from the [releases page][releases].
--   As a container image from the [container registry][containers].
--   Via nix:
-
-    ```sh
-    nix run 'github:NixOS/nixpkgs/nixpkgs-unstable#ratchet' -- --help
-    ```
-
-    Note this option is community supported and may not be the latest
-    available version.
-
--   Via golang:
-
-    ```sh
-    go install github.com/sethvargo/ratchet@latest
-    ```
-
--   Compiled from source yourself. Note this option is not supported.
-
 
 ## Usage
+
 
 For more information about available commands and options, run a command with
 `-help` to use detailed usage instructions.
@@ -176,108 +114,50 @@ and exiting with a non-zero error code when entries are not pinned:
 ratchet lint workflow.yml
 ```
 
-## Examples
+## Configuration
 
-#### CI/CD workflow
+<!-- Document configuration options here. This section is yours — the AI will not modify it. -->
 
-Ratchet is distributed as a very small container, so you can use it as a step
-inside CI/CD jobs. Here is a GitHub Actions example:
+## CI
 
-```yaml
-jobs:
-  my_job:
-    runs-on: 'ubuntu-latest'
-    name: 'ratchet'
-    steps:
-      - uses: 'actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683'
-      - uses: 'sethvargo/ratchet@main' # ratchet:exclude
-        with:
-          files: '.github/workflows/*.yml'
+<!-- AI:start:ci -->
+_CI documentation pending._
+<!-- AI:end:ci -->
+
+## Mirror chain
+
+<!-- AI:start:mirror-chain -->
+This repo is maintained in [`Interested-Deving-1896/ratchet`](https://github.com/Interested-Deving-1896/ratchet) and mirrored through:
+
+```
+Interested-Deving-1896/ratchet  ──►  OpenOS-Project-OSP/ratchet  ──►  OpenOS-Project-Ecosystem-OOC/ratchet
 ```
 
-This same pattern can be extended to other CI/CD systems: download the `ratchet`
-binary from [GitHub Releases][releases].
+Changes flow downstream automatically via the hourly mirror chain in
+[`fork-sync-all`](https://github.com/Interested-Deving-1896/fork-sync-all).
+Direct commits to OSP or OOC are detected and opened as PRs back to `Interested-Deving-1896`.
+<!-- AI:end:mirror-chain -->
 
-#### Runnable container CLI
+## Contributors
 
-Ratchet can run directly from a container on your local system:
+<!-- AI:start:contributors -->
+_Contributors pending._
+<!-- AI:end:contributors -->
 
-```shell
-docker run -it --rm -v "${PWD}:${PWD}" -w "${PWD}" ghcr.io/sethvargo/ratchet:latest COMMAND
-```
+## Origins
 
-Create a shell alias to make this easier:
+<!-- AI:start:origins -->
+_Original project — no upstream fork._
+<!-- AI:end:origins -->
 
-```shell
-function ratchet {
-  docker run -it --rm -v "${PWD}:${PWD}" -w "${PWD}" ghcr.io/sethvargo/ratchet:latest "$@"
-}
-```
+## Resources
 
+<!-- AI:start:resources -->
+_No additional resource files found._
+<!-- AI:end:resources -->
 
-## Auth
+## License
 
--   The container resolver uses default "keychain" auth, which looks for local
-    system auth, similar to the Docker and gcloud CLIs.
-
--   The GitHub resolver defaults to public github.com. Provide an oauth access
-    token with appropriate permissions via the `GITHUB_TOKEN` environment
-    variable. To use a GitHub Enterprise installation, set the
-    `ACTIONS_BASE_URL` and `ACTIONS_UPLOAD_URL` environment variables to point
-    your instance.
-
-
-## Excluding
-
-There may be instances in which you want to exclude a particular reference from
-being pinned. You can use the `ratchet:exclude` annotation as a line comment and
-ratchet will not process that reference:
-
-```yaml
-uses: 'actions/checkout@v4' # ratchet:exclude
-```
-
-There **cannot** be any spaces in the exclusion string, and the exclusion string
-only applies to the line on which it appears.
-
-
-## Terminology
-
--   **Unpinned version** - An unpinned version is a non-absolute reference to a
-    floating tag or label, such as `actions/checkout@v4` or `ubuntu:22.04`.
-
--   **Pinned version** - A pinned version is an absolute hashed reference, such
-    as `actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683` or
-    `ubuntu@sha256:82becede498899ec668628e7cb0ad87b6e1c371cb8a1e597d83a47fac21d6af3`.
-
-
-## Known issues
-
--   Indentation is always set to 2 spaces. The upstream YAML library does not
-    capture pre-parsing indentation. Thus, all files will be saved with 2 spaces
-    for indentation.
-
--   Does not support resolving values in anchors or aliases. This is technically
-    possible, but most CI systems also don't support these advanced YAML
-    features.
-
-    Similarly, Ratchet does not support expansion or interpolation, since those
-    values cannot be guaranteed to be known at compile time. For example,
-    Ratchet will ignore the following `${{ }}` reference in a GitHub Actions
-    workflow:
-
-    ```yaml
-    jobs:
-      my_job:
-        strategy:
-          matrix:
-            version:
-            - '1'
-            - '2'
-
-        steps:
-          - uses: 'actions/checkout@v${{ matrix.version }}'
-    ```
-
-[containers]: https://github.com/sethvargo/ratchet/pkgs/container/ratchet
-[releases]: https://github.com/sethvargo/ratchet/releases
+<!-- AI:start:license -->
+[Apache-2.0](https://github.com/Interested-Deving-1896/ratchet/blob/main/LICENSE) © 2026 [Interested-Deving-1896](https://github.com/Interested-Deving-1896)
+<!-- AI:end:license -->
