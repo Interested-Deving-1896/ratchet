@@ -121,7 +121,20 @@ ratchet lint workflow.yml
 ## CI
 
 <!-- AI:start:ci -->
-_CI documentation pending._
+The repository uses GitHub Actions for continuous integration. The following workflows are defined:
+
+1. **`test.yml`**  
+   - Runs tests and lints the codebase.  
+   - Steps include setting up Go, installing dependencies, running linters, and executing tests.  
+   - No secrets are required.
+
+2. **`release.yml`**  
+   - Builds and publishes a release using GoReleaser.  
+   - Triggered on version tags.  
+   - Requires the following secrets:
+     - `GITHUB_TOKEN`: Automatically provided by GitHub for authentication.
+     - `DOCKER_USERNAME`: Docker Hub username for publishing images.
+     - `DOCKER_PASSWORD`: Docker Hub password for authentication.
 <!-- AI:end:ci -->
 
 ## Mirror chain
